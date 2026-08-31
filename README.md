@@ -8,6 +8,7 @@ The selected decision is then sent to the Fleet Manager for approval. Once appro
 🔄 System Workflow
 
 Task/Request Generated
+     
         ↓
 
 EV Agents Share Real-Time Status
