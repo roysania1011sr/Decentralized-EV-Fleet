@@ -8,22 +8,39 @@ The selected decision is then sent to the Fleet Manager for approval. Once appro
 🔄 System Workflow
 
 Task/Request Generated
+
         ↓
+
 EV Agents Share Real-Time Status
+
         ↓
+
 V2V Communication
+
         ↓
+
 EVs Evaluate & Decide Suitable Vehicle
+
         ↓
+
 Decision Sent to Fleet Manager
+
         ↓
+
 Manager Approval
+
         ↓
+
 Suitable Driver Assigned
+
         ↓
+
 Task Started
+
         ↓
+
 Real-Time Monitoring
+
 
 If the assigned EV becomes unavailable, has insufficient battery, or encounters a failure, the fleet can identify another suitable EV and initiate task reassignment, improving fleet resilience.
 
