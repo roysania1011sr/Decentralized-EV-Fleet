@@ -1,0 +1,2446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decentralized EV Fleet</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+    background:#06111b;
+    color:#eef7ff;
+}
+
+header{
+    height:65px;
+    background:#081a29;
+    border-bottom:1px solid #30495c;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 20px;
+}
+
+.logo{
+    font-size:23px;
+    font-weight:800;
+}
+
+.subtitle{
+    color:#91a5b5;
+    font-size:11px;
+    margin-top:3px;
+}
+
+.network{
+    color:#42ef9d;
+    font-size:13px;
+    font-weight:bold;
+}
+
+.main{
+    height:calc(100vh - 65px);
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 620px;
+}
+
+/* MAP */
+.map{
+    position:relative;
+    overflow:hidden;
+    background:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px),
+    #07131f;
+    background-size:40px 40px;
+}
+
+/* ROADS */
+.road{
+    position:absolute;
+    background:#172b3b;
+    border-top:1px solid #3d5668;
+    border-bottom:1px solid #3d5668;
+    z-index:2;
+}
+
+.road:after{
+    content:"";
+    position:absolute;
+    left:0;
+    right:0;
+    top:50%;
+    border-top:2px dashed #74899a;
+    opacity:.35;
+}
+
+.h1{top:28%;width:100%;height:44px}
+.h2{top:52%;width:100%;height:44px}
+.h3{top:76%;width:100%;height:44px}
+
+.v1,.v2,.v3{
+    top:0;
+    height:100%;
+    width:44px;
+}
+
+.v1{left:37%}
+.v2{left:62%}
+.v3{left:83%}
+
+.v1:after,.v2:after,.v3:after{
+    content:"";
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:50%;
+    border-left:2px dashed #74899a;
+    opacity:.35;
+}
+
+/* WAREHOUSE */
+.warehouse{
+    position:absolute;
+    left:18px;
+    top:42%;
+    width:135px;
+    height:110px;
+    background:#10283a;
+    border:2px solid #4db6ff;
+    border-radius:10px;
+    text-align:center;
+    z-index:30;
+}
+
+.warehouse-title{
+    color:#58baff;
+    font-size:13px;
+    font-weight:bold;
+    padding:6px;
+}
+
+.factory{font-size:27px}
+
+.door{
+    width:40px;
+    height:20px;
+    background:#06121c;
+    border:2px solid #516b7e;
+    margin:auto;
+}
+
+.warehouse small{
+    color:#8aa0b0;
+    font-size:9px;
+}
+
+/* CHARGING */
+.charging-station{
+    position:absolute;
+    left:18px;
+    top:12px;
+    width:135px;
+    height:65px;
+    background:#0b2925;
+    border:2px solid #42ef9d;
+    border-radius:9px;
+    text-align:center;
+    z-index:30;
+}
+
+.charge-title{
+    color:#42ef9d;
+    font-size:11px;
+    font-weight:bold;
+    margin-top:5px;
+}
+
+.charge-icon{font-size:18px}
+
+.charging-station small{
+    color:#91a7b7;
+    font-size:8px;
+}
+
+/* DELIVERY */
+.delivery{
+    position:absolute;
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    background:#3b2c18;
+    border:2px solid #ffc052;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+    z-index:30;
+}
+
+.delivery span{
+    position:absolute;
+    top:52px;
+    color:#ffc052;
+    font-size:10px;
+    white-space:nowrap;
+}
+
+.delivery.active{
+    transform:scale(1.18);
+    box-shadow:0 0 18px #ffc052;
+}
+
+.delivery-a{left:87%;top:19%}
+.delivery-b{left:69%;top:51%}
+.delivery-c{left:87%;top:77%}
+
+/* EV */
+.ev{
+    position:absolute;
+    width:72px;
+    height:72px;
+    border-radius:50%;
+    background:#102a40;
+    border:3px solid #4db6ff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:27px;
+    z-index:100;
+    transition:left .10s linear,top .10s linear;
+}
+
+.ev-info{
+    position:absolute;
+    top:75px;
+    left:50%;
+    transform:translateX(-50%);
+    width:92px;
+    padding:4px;
+    background:#06121c;
+    border:1px solid #385166;
+    border-radius:6px;
+    text-align:center;
+    white-space:nowrap;
+}
+
+.ev-name{
+    font-size:12px;
+    font-weight:bold;
+}
+
+.battery{
+    font-size:15px;
+    font-weight:bold;
+    color:#42ef9d;
+}
+
+.status{
+    color:#9aabba;
+    font-size:9px;
+}
+
+.ev.assigned{
+    border-color:#42ef9d;
+    box-shadow:0 0 20px #42ef9d;
+}
+
+.ev.fault{
+    border-color:#ff4f5b;
+    background:#35171d;
+    box-shadow:0 0 25px #ff4f5b;
+}
+
+.ev.charging{
+    border-color:#ffc052;
+    box-shadow:0 0 20px #ffc052;
+}
+
+.fault-badge{
+    position:absolute;
+    top:-28px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#5c1d24;
+    color:#ff6972;
+    border:1px solid #ff4f5b;
+    border-radius:5px;
+    padding:3px 7px;
+    font-size:9px;
+    font-weight:bold;
+}
+
+/* V2V */
+.v2v-line{
+    position:absolute;
+    height:3px;
+    background:#42ef9d;
+    border-top:2px dotted #42ef9d;
+    transform-origin:left center;
+    z-index:75;
+    box-shadow:0 0 7px #42ef9d;
+    pointer-events:none;
+}
+
+.signal{
+    position:absolute;
+    background:#063126;
+    color:#42ef9d;
+    border:1px solid #42ef9d;
+    border-radius:12px;
+    padding:4px 7px;
+    font-size:8px;
+    font-weight:bold;
+    z-index:170;
+    animation:signal 1.5s forwards;
+    pointer-events:none;
+}
+
+@keyframes signal{
+    0%{opacity:0;transform:translate(-50%,0)}
+    20%{opacity:1}
+    100%{opacity:0;transform:translate(-50%,-18px)}
+}
+
+.map-status{
+    position:absolute;
+    bottom:10px;
+    left:15px;
+    background:#071824;
+    border:1px solid #30475b;
+    border-radius:6px;
+    padding:7px 10px;
+    z-index:300;
+    font-size:10px;
+    color:#91a5b5;
+}
+
+.map-status b{color:#42ef9d}
+
+/* SIDEBAR */
+.sidebar{
+    background:#091725;
+    border-left:1px solid #30475b;
+    padding:8px;
+    display:grid;
+    grid-template-rows:60px 98px 105px 90px minmax(0,1fr);
+    gap:7px;
+    overflow:hidden;
+}
+
+/* STATS */
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:5px;
+}
+
+.stat{
+    background:#0c1e2d;
+    border:1px solid #30475b;
+    border-radius:6px;
+    padding:5px;
+    text-align:center;
+}
+
+.stat-number{
+    color:#42ef9d;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.stat-label{
+    color:#8298a9;
+    font-size:8px;
+    margin-top:2px;
+}
+
+/* CONTROLS */
+.section-title{
+    color:#a4b5c2;
+    font-size:11px;
+    font-weight:bold;
+    margin-bottom:4px;
+}
+
+.controls{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:4px;
+}
+
+button{
+    background:#11283b;
+    color:#edf7ff;
+    border:1px solid #40586b;
+    border-radius:5px;
+    padding:6px 2px;
+    font-size:9px;
+    cursor:pointer;
+}
+
+button:hover{border-color:#42ef9d}
+
+.start{
+    background:#12584d;
+    border-color:#42ef9d;
+}
+
+.fault-btn{
+    background:#572027;
+    border-color:#ff4f5b;
+}
+
+/* ORDERS */
+.requests{
+    background:#071824;
+    border:1px solid #3a5267;
+    border-radius:6px;
+    padding:6px;
+    overflow:hidden;
+}
+
+.request-list{
+    display:flex;
+    gap:5px;
+    overflow-x:auto;
+}
+
+.request{
+    min-width:128px;
+    background:#0c1e2d;
+    border:1px solid #30475b;
+    border-radius:5px;
+    padding:5px;
+    font-size:9px;
+}
+
+.request.active{border-color:#42ef9d}
+
+.request strong{color:#58baff}
+
+.req-status{
+    margin-top:3px;
+    color:#42ef9d;
+}
+
+/* MANAGER */
+.manager{
+    background:#071824;
+    border:1px solid #58baff;
+    border-radius:6px;
+    padding:6px;
+}
+
+.manager-header{
+    display:flex;
+    justify-content:space-between;
+}
+
+.manager-title{
+    color:#58baff;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.manager-online{
+    color:#42ef9d;
+    font-size:9px;
+}
+
+.manager-flow{
+    display:grid;
+    grid-template-columns:1fr 18px 1fr 18px 1fr;
+    align-items:center;
+    text-align:center;
+    margin-top:5px;
+}
+
+.flow-box{
+    background:#0c1e2d;
+    border:1px solid #30475b;
+    border-radius:5px;
+    padding:5px 2px;
+    font-size:9px;
+}
+
+.flow-arrow{
+    color:#42ef9d;
+}
+
+.manager-action{
+    margin-top:4px;
+    background:#0c2925;
+    border-radius:5px;
+    padding:4px;
+    color:#aef5dc;
+    text-align:center;
+    font-size:9px;
+}
+
+/* COMMUNICATION */
+.communication{
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+}
+
+.comm-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:4px;
+}
+
+.communication .section-title{
+    font-size:14px;
+}
+
+.live{
+    color:#42ef9d;
+    font-size:10px;
+    font-weight:bold;
+}
+
+.log{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    background:#06111b;
+    border:1px solid #30475b;
+    border-radius:6px;
+    padding:6px;
+}
+
+.message{
+    padding:7px;
+    background:#0c1e2d;
+    border-left:3px solid #42ef9d;
+    border-radius:5px;
+    margin-bottom:4px;
+    font-size:10px;
+    line-height:1.35;
+}
+
+.message strong{color:#42ef9d}
+
+.message.order{border-left-color:#58baff}
+.message.order strong{color:#58baff}
+
+.message.manager{border-left-color:#58baff}
+.message.manager strong{color:#58baff}
+
+.message.fault{border-left-color:#ff4f5b}
+.message.fault strong{color:#ff6972}
+
+.message.charge{border-left-color:#ffc052}
+.message.charge strong{color:#ffc052}
+
+.message.select{border-left-color:#b58cff}
+.message.select strong{color:#b58cff}
+</style>
+</head>
+
+<body>
+
+<header>
+<div>
+<div class="logo">DECENTRALIZED EV FLEET</div>
+<div class="subtitle">
+Peer-to-Peer V2V Communication • Autonomous Delivery • Fault Recovery
+</div>
+</div>
+
+<div class="network">● V2V NETWORK ONLINE</div>
+</header>
+
+<div class="main">
+
+<div class="map" id="map">
+
+<div class="road h1"></div>
+<div class="road h2"></div>
+<div class="road h3"></div>
+
+<div class="road v1"></div>
+<div class="road v2"></div>
+<div class="road v3"></div>
+
+<div class="charging-station">
+<div class="charge-title">⚡ SMART CHARGING</div>
+<div class="charge-icon">🔋</div>
+<small>AUTO LOW-BATTERY</small>
+</div>
+
+<div class="warehouse">
+<div class="warehouse-title">🏭 WAREHOUSE</div>
+<div class="factory">🏭</div>
+<div class="door"></div>
+<small>EV DEPOT</small>
+</div>
+
+<div class="delivery delivery-a" id="delivery-A">
+📍<span>DELIVERY A</span>
+</div>
+
+<div class="delivery delivery-b" id="delivery-B">
+📍<span>DELIVERY B</span>
+</div>
+
+<div class="delivery delivery-c" id="delivery-C">
+📍<span>DELIVERY C</span>
+</div>
+
+<div class="ev" id="EV1">
+🚗
+<div class="ev-info">
+<div class="ev-name">EV-01</div>
+<div class="battery" id="battery-1">94%</div>
+<div class="status" id="status-1">AVAILABLE</div>
+</div>
+</div>
+
+<div class="ev" id="EV2">
+🚗
+<div class="ev-info">
+<div class="ev-name">EV-02</div>
+<div class="battery" id="battery-2">82%</div>
+<div class="status" id="status-2">AVAILABLE</div>
+</div>
+</div>
+
+<div class="ev" id="EV3">
+🚗
+<div class="ev-info">
+<div class="ev-name">EV-03</div>
+<div class="battery" id="battery-3">64%</div>
+<div class="status" id="status-3">AVAILABLE</div>
+</div>
+</div>
+
+<div class="ev" id="EV4">
+🚗
+<div class="ev-info">
+<div class="ev-name">EV-04</div>
+<div class="battery" id="battery-4">76%</div>
+<div class="status" id="status-4">AVAILABLE</div>
+</div>
+</div>
+
+<div id="communicationLayer"></div>
+
+<div class="map-status">
+SYSTEM: <b id="mapStatus">Waiting for order...</b>
+</div>
+
+</div>
+
+
+<div class="sidebar">
+
+<div class="stats">
+
+<div class="stat">
+<div class="stat-number" id="orderCount">0</div>
+<div class="stat-label">ORDER REQUESTS</div>
+</div>
+
+<div class="stat">
+<div class="stat-number" id="activeCount">0</div>
+<div class="stat-label">ACTIVE ORDERS</div>
+</div>
+
+<div class="stat">
+<div class="stat-number" id="completedCount">0</div>
+<div class="stat-label">COMPLETED</div>
+</div>
+
+<div class="stat">
+<div class="stat-number">●</div>
+<div class="stat-label">MANAGER ONLINE</div>
+</div>
+
+</div>
+
+
+<div>
+
+<div class="section-title">SIMULATION CONTROLS</div>
+
+<div class="controls">
+
+<button class="start" onclick="startSimulation()">▶ START</button>
+<button onclick="createOrder()">+ ORDER</button>
+<button onclick="createMultipleOrders()">+ MULTI ORDER</button>
+<button class="fault-btn" onclick="triggerFault()">🚨 FAULT</button>
+
+<button onclick="simulateLowBattery()">⚡ LOW BAT</button>
+<button onclick="speedUp()">⚡ SPEED</button>
+<button onclick="clearLog()">CLEAR LOG</button>
+<button onclick="resetSimulation()">↻ RESET</button>
+
+</div>
+
+</div>
+
+
+<div class="requests">
+
+<div class="section-title">ORDER REQUEST QUEUE</div>
+
+<div class="request-list" id="requestList"></div>
+
+</div>
+
+
+<div class="manager">
+
+<div class="manager-header">
+
+<div class="manager-title">👨‍💼 FLEET MANAGER</div>
+
+<div class="manager-online">● ONLINE</div>
+
+</div>
+
+<div class="manager-flow">
+
+<div class="flow-box">EV NETWORK</div>
+<div class="flow-arrow">→</div>
+<div class="flow-box">BEST EV</div>
+<div class="flow-arrow">→</div>
+<div class="flow-box">MANAGER</div>
+
+</div>
+
+<div class="manager-action" id="managerAction">
+Waiting for EV recommendation...
+</div>
+
+</div>
+
+
+<div class="communication">
+
+<div class="comm-header">
+
+<div class="section-title">📡 LIVE V2V COMMUNICATION</div>
+
+<div class="live">● LIVE</div>
+
+</div>
+
+<div class="log" id="log"></div>
+
+</div>
+
+</div>
+</div>
+
+
+<script>
+
+/* =========================================================
+   EV DATA
+========================================================= */
+
+const EVS = [
+
+{
+ id:"EV1",
+ name:"EV-01",
+ x:27,
+ y:32,
+ homeX:27,
+ homeY:32,
+ battery:94,
+ status:"AVAILABLE",
+ task:null
+},
+
+{
+ id:"EV2",
+ name:"EV-02",
+ x:27,
+ y:64,
+ homeX:27,
+ homeY:64,
+ battery:82,
+ status:"AVAILABLE",
+ task:null
+},
+
+{
+ id:"EV3",
+ name:"EV-03",
+ x:47,
+ y:32,
+ homeX:47,
+ homeY:32,
+ battery:64,
+ status:"AVAILABLE",
+ task:null
+},
+
+{
+ id:"EV4",
+ name:"EV-04",
+ x:47,
+ y:64,
+ homeX:47,
+ homeY:64,
+ battery:76,
+ status:"AVAILABLE",
+ task:null
+}
+
+];
+
+const DESTINATIONS={
+ A:{x:87,y:19},
+ B:{x:69,y:51},
+ C:{x:87,y:77}
+};
+
+let orders=[];
+let orderNumber=0;
+let completedOrders=0;
+let running=false;
+let simulationSpeed=1;
+
+let idleChargingTimer=null;
+
+
+/* =========================================================
+   INITIAL POSITION
+========================================================= */
+
+EVS.forEach(ev=>{
+    positionEV(ev);
+    updateEV(ev);
+});
+
+
+/* =========================================================
+   POSITION
+========================================================= */
+
+function positionEV(ev){
+
+    const el=document.getElementById(ev.id);
+
+    el.style.left=`calc(${ev.x}% - 36px)`;
+    el.style.top=`calc(${ev.y}% - 36px)`;
+
+}
+
+
+/* =========================================================
+   UPDATE EV
+========================================================= */
+
+function updateEV(ev){
+
+    const n=ev.id.replace("EV","");
+
+    document.getElementById("battery-"+n).innerText=
+        Math.round(ev.battery)+"%";
+
+    document.getElementById("status-"+n).innerText=
+        ev.status;
+
+    const el=document.getElementById(ev.id);
+
+    el.classList.toggle(
+        "assigned",
+        ["ASSIGNED","DELIVERING","TAKEOVER","RETURNING"]
+        .includes(ev.status)
+    );
+
+    el.classList.toggle(
+        "fault",
+        ev.status==="FAULT"
+    );
+
+    el.classList.toggle(
+        "charging",
+        ev.status==="CHARGING"
+    );
+
+    const old=el.querySelector(".fault-badge");
+
+    if(old) old.remove();
+
+    if(ev.status==="FAULT"){
+
+        const badge=document.createElement("div");
+
+        badge.className="fault-badge";
+        badge.innerText="⚠ FAULT";
+
+        el.appendChild(badge);
+    }
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function updateStats(){
+
+    document.getElementById("orderCount").innerText=
+        orders.length;
+
+    document.getElementById("activeCount").innerText=
+        orders.filter(
+            o=>o.status!=="COMPLETED"
+        ).length;
+
+    document.getElementById("completedCount").innerText=
+        completedOrders;
+}
+
+
+/* =========================================================
+   LOG
+========================================================= */
+
+function logMessage(from,to,message,type="v2v"){
+
+    const log=document.getElementById("log");
+
+    const msg=document.createElement("div");
+
+    msg.className="message "+type;
+
+    msg.innerHTML=
+        `<strong>${from}</strong> → <strong>${to}</strong>
+        <br>${message}`;
+
+    log.prepend(msg);
+}
+
+
+/* =========================================================
+   V2V VISUAL
+========================================================= */
+
+function communicate(fromID,toID,message,type="v2v"){
+
+    const from=document.getElementById(fromID);
+    const to=document.getElementById(toID);
+
+    if(!from || !to) return;
+
+    const map=document.getElementById("map")
+        .getBoundingClientRect();
+
+    const a=from.getBoundingClientRect();
+    const b=to.getBoundingClientRect();
+
+    const x1=a.left-map.left+36;
+    const y1=a.top-map.top+36;
+
+    const x2=b.left-map.left+36;
+    const y2=b.top-map.top+36;
+
+    const dx=x2-x1;
+    const dy=y2-y1;
+
+    const distance=Math.sqrt(dx*dx+dy*dy);
+
+    const angle=Math.atan2(dy,dx)*180/Math.PI;
+
+    const line=document.createElement("div");
+
+    line.className="v2v-line";
+
+    line.style.left=x1+"px";
+    line.style.top=y1+"px";
+    line.style.width=distance+"px";
+    line.style.transform=`rotate(${angle}deg)`;
+
+    document.getElementById("communicationLayer")
+        .appendChild(line);
+
+    const signal=document.createElement("div");
+
+    signal.className="signal";
+    signal.innerText="📡 V2V";
+
+    signal.style.left=((x1+x2)/2)+"px";
+    signal.style.top=((y1+y2)/2)+"px";
+
+    document.getElementById("communicationLayer")
+        .appendChild(signal);
+
+    logMessage(fromID,toID,message,type);
+
+    setTimeout(()=>{
+        line.remove();
+        signal.remove();
+    },1500);
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+function startSimulation(){
+
+    if(running) return;
+
+    running=true;
+
+    logMessage(
+        "SYSTEM",
+        "ALL EVs",
+        "V2V network online. All EVs connected and monitoring fleet status.",
+        "v2v"
+    );
+
+    document.getElementById("mapStatus").innerText=
+        "V2V network active";
+
+    /* EVs communicate immediately */
+
+    setTimeout(()=>{
+        communicate(
+            "EV1",
+            "EV2",
+            "Network check complete. EV-01 online."
+        );
+    },300);
+
+    setTimeout(()=>{
+        communicate(
+            "EV3",
+            "EV4",
+            "Network check complete. EV-03 online."
+        );
+    },650);
+
+    setTimeout(()=>{
+        communicate(
+            "EV2",
+            "EV3",
+            "Battery status shared. Fleet ready."
+        );
+    },1000);
+
+    /*
+       START IDLE MONITORING
+    */
+
+    startIdleBatteryMonitoring();
+}
+
+
+/* =========================================================
+   CREATE ORDER
+========================================================= */
+
+function createOrder(){
+
+    orderNumber++;
+
+    const destinations=["A","B","C"];
+
+    const destination=
+        destinations[
+            (orderNumber-1)%3
+        ];
+
+    const order={
+        id:"ORD-"+String(orderNumber).padStart(3,"0"),
+        destination:destination,
+        status:"WAITING",
+        phase:"WAITING",
+        ev:null,
+        faultHandled:false
+    };
+
+    orders.push(order);
+
+    renderOrders();
+    updateStats();
+
+    logMessage(
+        "SYSTEM",
+        "ALL EVs",
+        `${order.id} received → Delivery ${destination}. Request broadcast to EV fleet.`,
+        "order"
+    );
+
+    document.getElementById("mapStatus").innerText=
+        `${order.id} received → V2V negotiation`;
+
+    setTimeout(()=>{
+        assignOrder(order);
+    },600);
+}
+
+
+/* =========================================================
+   MULTIPLE ORDERS
+========================================================= */
+
+function createMultipleOrders(){
+
+    const destinations=["A","B","C"];
+
+    destinations.forEach((destination,index)=>{
+
+        orderNumber++;
+
+        const order={
+            id:"ORD-"+String(orderNumber).padStart(3,"0"),
+            destination:destination,
+            status:"WAITING",
+            phase:"WAITING",
+            ev:null,
+            faultHandled:false
+        };
+
+        orders.push(order);
+
+        setTimeout(()=>{
+
+            logMessage(
+                "SYSTEM",
+                "ALL EVs",
+                `${order.id} received → Delivery ${destination}. V2V request broadcast.`,
+                "order"
+            );
+
+        },index*250);
+    });
+
+    renderOrders();
+    updateStats();
+
+    document.getElementById("mapStatus").innerText=
+        "3 ORDERS RECEIVED → V2V allocation";
+
+    setTimeout(()=>{
+        processMultipleOrders();
+    },900);
+}
+
+
+/* =========================================================
+   MULTIPLE ORDER PROCESS
+========================================================= */
+
+function processMultipleOrders(){
+
+    const pending=
+        orders.filter(
+            o=>o.status==="WAITING"
+        );
+
+    const available=
+        EVS.filter(
+            ev=>
+                ev.status==="AVAILABLE" &&
+                ev.battery>=25
+        );
+
+    /*
+       Sort by battery and distance.
+    */
+
+    available.sort((a,b)=>{
+
+        const targetA=
+            DESTINATIONS[
+                pending[0]?.destination || "A"
+            ];
+
+        const targetB=
+            DESTINATIONS[
+                pending[0]?.destination || "A"
+            ];
+
+        const scoreA=
+            a.battery-
+            calculateDistance(a,targetA)*.5;
+
+        const scoreB=
+            b.battery-
+            calculateDistance(b,targetB)*.5;
+
+        return scoreB-scoreA;
+    });
+
+    pending.forEach((order,index)=>{
+
+        const ev=available[index];
+
+        if(!ev){
+
+            logMessage(
+                "SYSTEM",
+                "FLEET",
+                `${order.id} pending → no free feasible EV.`,
+                "fault"
+            );
+
+            return;
+        }
+
+        negotiateOrder(
+            order,
+            ev,
+            available
+        );
+    });
+}
+
+
+/* =========================================================
+   SINGLE ORDER
+========================================================= */
+
+function assignOrder(order){
+
+    const available=
+        EVS.filter(
+            ev=>
+                ev.status==="AVAILABLE" &&
+                ev.battery>=25
+        );
+
+    if(!available.length){
+
+        logMessage(
+            "SYSTEM",
+            "FLEET",
+            `${order.id} pending → no feasible EV available.`,
+            "fault"
+        );
+
+        return;
+    }
+
+    negotiateOrder(
+        order,
+        null,
+        available
+    );
+}
+
+
+/* =========================================================
+   NEGOTIATION
+========================================================= */
+
+function negotiateOrder(
+    order,
+    forcedEV,
+    available
+){
+
+    order.status="NEGOTIATING";
+
+    renderOrders();
+    updateStats();
+
+    /*
+       EVs communicate with each other.
+    */
+
+    available.forEach((ev,index)=>{
+
+        setTimeout(()=>{
+
+            if(ev.status!=="AVAILABLE")
+                return;
+
+            const receiver=
+                available[
+                    (index+1)%available.length
+                ];
+
+            if(
+                receiver &&
+                receiver.id!==ev.id
+            ){
+
+                communicate(
+                    ev.id,
+                    receiver.id,
+                    `${order.id}: Battery ${Math.round(ev.battery)}%. I am available for Delivery ${order.destination}.`,
+                    "v2v"
+                );
+            }
+
+        },index*250);
+    });
+
+
+    setTimeout(()=>{
+
+        let winner;
+
+        if(forcedEV){
+
+            winner=forcedEV;
+
+        }else{
+
+            const candidates=
+                available.filter(
+                    ev=>
+                        ev.status==="AVAILABLE"
+                );
+
+            if(!candidates.length){
+
+                order.status="WAITING";
+
+                renderOrders();
+                updateStats();
+
+                return;
+            }
+
+            winner=
+                candidates.sort((a,b)=>{
+
+                    const target=
+                        DESTINATIONS[
+                            order.destination
+                        ];
+
+                    const scoreA=
+                        a.battery-
+                        calculateDistance(a,target)*.5;
+
+                    const scoreB=
+                        b.battery-
+                        calculateDistance(b,target)*.5;
+
+                    return scoreB-scoreA;
+
+                })[0];
+        }
+
+
+        if(winner.status!=="AVAILABLE"){
+
+            order.status="WAITING";
+
+            renderOrders();
+            updateStats();
+
+            return;
+        }
+
+
+        winner.status="ASSIGNED";
+        winner.task=order.id;
+
+        order.ev=winner.id;
+        order.status="ASSIGNED";
+        order.phase="BEST EV SELECTED";
+
+        updateEV(winner);
+        renderOrders();
+        updateStats();
+
+        logMessage(
+            winner.name,
+            "ALL EVs",
+            `${winner.name} selected through V2V as the best feasible EV for ${order.id}.`,
+            "select"
+        );
+
+        document.getElementById("managerAction").innerText=
+            `${winner.name} recommended for ${order.id}.`;
+
+        setTimeout(()=>{
+            managerApprove(order,winner);
+        },500);
+
+    },1000);
+}
+
+
+/* =========================================================
+   DISTANCE
+========================================================= */
+
+function calculateDistance(ev,target){
+
+    return Math.sqrt(
+        Math.pow(target.x-ev.x,2)+
+        Math.pow(target.y-ev.y,2)
+    );
+}
+
+
+/* =========================================================
+   MANAGER
+========================================================= */
+
+function managerApprove(order,ev){
+
+    order.status="MANAGER APPROVED";
+
+    renderOrders();
+    updateStats();
+
+    document.getElementById("managerAction").innerText=
+        `✓ ${ev.name} approved → Driver dispatched.`;
+
+    logMessage(
+        "FLEET MANAGER",
+        ev.name,
+        `${order.id} approved. Driver dispatched to ${ev.name}.`,
+        "manager"
+    );
+
+    setTimeout(()=>{
+        startDelivery(order,ev);
+    },400);
+}
+
+
+/* =========================================================
+   DELIVERY
+========================================================= */
+
+function startDelivery(order,ev){
+
+    if(
+        ev.status==="FAULT" ||
+        ev.status==="CHARGING"
+    )
+        return;
+
+    order.status="DELIVERING";
+    order.phase="ON WAY";
+
+    ev.status="DELIVERING";
+    ev.task=order.id;
+
+    updateEV(ev);
+    renderOrders();
+    updateStats();
+
+    const destination=
+        DESTINATIONS[
+            order.destination
+        ];
+
+    document.querySelectorAll(".delivery")
+        .forEach(x=>x.classList.remove("active"));
+
+    document.getElementById(
+        "delivery-"+order.destination
+    ).classList.add("active");
+
+    document.getElementById("mapStatus").innerText=
+        `${ev.name} → Delivery ${order.destination}`;
+
+    logMessage(
+        ev.name,
+        "DELIVERY",
+        `${order.id} dispatched. ${ev.name} travelling to Delivery ${order.destination}.`,
+        "order"
+    );
+
+    moveToDestination(
+        ev,
+        destination,
+        order
+    );
+}
+
+
+/* =========================================================
+   MOVEMENT TO DELIVERY
+========================================================= */
+
+function moveToDestination(
+    ev,
+    destination,
+    order
+){
+
+    const timer=setInterval(()=>{
+
+        if(ev.status!=="DELIVERING"){
+
+            clearInterval(timer);
+            return;
+        }
+
+        const dx=destination.x-ev.x;
+        const dy=destination.y-ev.y;
+
+        const distance=
+            Math.sqrt(dx*dx+dy*dy);
+
+        /*
+           BATTERY FALLS DURING DELIVERY
+        */
+
+        ev.battery-=0.42;
+
+        if(ev.battery<=15){
+
+            ev.battery=15;
+
+            clearInterval(timer);
+
+            updateEV(ev);
+
+            lowBatteryDuringDelivery(
+                order,
+                ev
+            );
+
+            return;
+        }
+
+        /*
+           EXACT DESTINATION
+        */
+
+        if(distance<=1.5){
+
+            ev.x=destination.x;
+            ev.y=destination.y;
+
+            positionEV(ev);
+            updateEV(ev);
+
+            clearInterval(timer);
+
+            setTimeout(()=>{
+                completeDelivery(order,ev);
+            },300);
+
+            return;
+        }
+
+        const speed=2.6;
+
+        ev.x+=(dx/distance)*speed;
+        ev.y+=(dy/distance)*speed;
+
+        positionEV(ev);
+        updateEV(ev);
+
+    },90);
+}
+
+
+/* =========================================================
+   DELIVERY COMPLETE
+========================================================= */
+
+function completeDelivery(order,ev){
+
+    if(order.status!=="DELIVERING")
+        return;
+
+    order.status="COMPLETED";
+    order.phase="DELIVERED";
+
+    completedOrders++;
+
+    logMessage(
+        ev.name,
+        "FLEET MANAGER",
+        `✓ ${order.id} delivered successfully at Delivery ${order.destination}.`,
+        "order"
+    );
+
+    document.getElementById("mapStatus").innerText=
+        `${order.id} DELIVERED ✓`;
+
+    renderOrders();
+    updateStats();
+
+    /*
+       RETURN ONLY AFTER DELIVERY.
+    */
+
+    setTimeout(()=>{
+        returnToDepot(ev);
+    },400);
+}
+
+
+/* =========================================================
+   RETURN
+========================================================= */
+
+function returnToDepot(ev){
+
+    ev.status="RETURNING";
+
+    updateEV(ev);
+
+    logMessage(
+        ev.name,
+        "FLEET",
+        `${ev.name} is returning to depot. Battery consumption continues.`,
+        "order"
+    );
+
+    const target={
+        x:ev.homeX,
+        y:ev.homeY
+    };
+
+    const timer=setInterval(()=>{
+
+        const dx=target.x-ev.x;
+        const dy=target.y-ev.y;
+
+        const distance=
+            Math.sqrt(dx*dx+dy*dy);
+
+        /*
+           RETURN BATTERY
+        */
+
+        ev.battery-=0.30;
+
+        if(ev.battery<=15){
+
+            ev.battery=15;
+
+            clearInterval(timer);
+
+            updateEV(ev);
+
+            logMessage(
+                ev.name,
+                "ALL EVs",
+                `${ev.name} reached low battery while returning. Requesting charging support.`,
+                "charge"
+            );
+
+            ev.status="AVAILABLE";
+
+            updateEV(ev);
+
+            setTimeout(()=>{
+                idleChargingNegotiation(ev);
+            },500);
+
+            return;
+        }
+
+        if(distance<=1.5){
+
+            ev.x=target.x;
+            ev.y=target.y;
+
+            positionEV(ev);
+
+            clearInterval(timer);
+
+            ev.status="AVAILABLE";
+            ev.task=null;
+
+            updateEV(ev);
+            updateStats();
+
+            logMessage(
+                ev.name,
+                "ALL EVs",
+                `${ev.name} returned to depot and is now available.`,
+                "v2v"
+            );
+
+            /*
+               After returning, check charging.
+            */
+
+            setTimeout(()=>{
+                idleChargingCheck();
+            },700);
+
+            return;
+        }
+
+        const speed=2.6;
+
+        ev.x+=(dx/distance)*speed;
+        ev.y+=(dy/distance)*speed;
+
+        positionEV(ev);
+        updateEV(ev);
+
+    },90);
+}
+
+
+/* =========================================================
+   LOW BATTERY DURING DELIVERY
+========================================================= */
+
+function lowBatteryDuringDelivery(order,ev){
+
+    if(ev.status!=="DELIVERING")
+        return;
+
+    ev.status="LOW BATTERY";
+
+    updateEV(ev);
+
+    logMessage(
+        ev.name,
+        "ALL EVs",
+        `⚡ ${ev.name} battery is critically low at ${Math.round(ev.battery)}%. Requesting V2V takeover.`,
+        "charge"
+    );
+
+    const candidates=
+        EVS.filter(
+            x=>
+                x.id!==ev.id &&
+                x.status==="AVAILABLE" &&
+                x.battery>=30
+        );
+
+    if(candidates.length){
+
+        candidates.forEach((other,index)=>{
+
+            setTimeout(()=>{
+
+                communicate(
+                    other.id,
+                    ev.id,
+                    `I can take over ${order.id}. Battery ${Math.round(other.battery)}%.`,
+                    "charge"
+                );
+
+            },index*250);
+
+        });
+
+        setTimeout(()=>{
+
+            const replacement=
+                candidates.sort(
+                    (a,b)=>b.battery-a.battery
+                )[0];
+
+            triggerFaultForOrder(
+                order,
+                ev,
+                replacement
+            );
+
+        },900);
+
+    }else{
+
+        logMessage(
+            "SYSTEM",
+            "FLEET",
+            `${order.id} waiting → no feasible replacement EV.`,
+            "fault"
+        );
+
+        automaticCharging(ev);
+    }
+}
+
+
+/* =========================================================
+   FAULT
+========================================================= */
+
+function triggerFault(){
+
+    const active=
+        orders.find(
+            o=>o.status==="DELIVERING"
+        );
+
+    if(!active){
+
+        logMessage(
+            "SYSTEM",
+            "FLEET",
+            "No EV is currently travelling. Start a delivery first.",
+            "fault"
+        );
+
+        return;
+    }
+
+    const ev=
+        EVS.find(
+            x=>x.id===active.ev
+        );
+
+    if(ev){
+
+        triggerFaultForOrder(
+            active,
+            ev,
+            null
+        );
+    }
+}
+
+
+/* =========================================================
+   FAULT HANDLER
+========================================================= */
+
+function triggerFaultForOrder(
+    order,
+    failedEV,
+    selectedReplacement
+){
+
+    if(order.faultHandled)
+        return;
+
+    order.faultHandled=true;
+
+    order.status="FAULT - TAKEOVER";
+    order.phase="FAULT RECOVERY";
+
+    failedEV.status="FAULT";
+
+    updateEV(failedEV);
+
+    renderOrders();
+    updateStats();
+
+    logMessage(
+        failedEV.name,
+        "ALL EVs",
+        `🚨 FAULT DETECTED MID-DELIVERY! ${failedEV.name} stopped on the road.`,
+        "fault"
+    );
+
+    logMessage(
+        failedEV.name,
+        "ALL EVs",
+        `${order.id} requires another EV to continue.`,
+        "fault"
+    );
+
+    document.getElementById("mapStatus").innerText=
+        `${failedEV.name} FAULT → V2V TAKEOVER`;
+
+    let replacement=
+        selectedReplacement;
+
+    if(!replacement){
+
+        const candidates=
+            EVS.filter(
+                ev=>
+                    ev.id!==failedEV.id &&
+                    ev.status==="AVAILABLE" &&
+                    ev.battery>=30
+            );
+
+        if(!candidates.length){
+
+            logMessage(
+                "SYSTEM",
+                "FLEET",
+                `${order.id} pending → no feasible takeover EV.`,
+                "fault"
+            );
+
+            return;
+        }
+
+        replacement=
+            candidates.sort(
+                (a,b)=>b.battery-a.battery
+            )[0];
+
+        candidates.forEach((ev,index)=>{
+
+            setTimeout(()=>{
+
+                if(ev.id!==replacement.id){
+
+                    communicate(
+                        ev.id,
+                        replacement.id,
+                        `I have ${Math.round(ev.battery)}%. Can support takeover.`,
+                        "fault"
+                    );
+
+                }
+
+            },index*250);
+
+        });
+    }
+
+    setTimeout(()=>{
+
+        replacement.status="TAKEOVER";
+        replacement.task=order.id;
+
+        /*
+           Start replacement from exact
+           fault location.
+        */
+
+        replacement.x=failedEV.x;
+        replacement.y=failedEV.y;
+
+        positionEV(replacement);
+
+        order.ev=replacement.id;
+
+        order.status="TAKEOVER APPROVED";
+
+        updateEV(replacement);
+        renderOrders();
+        updateStats();
+
+        logMessage(
+            replacement.name,
+            "ALL EVs",
+            `${replacement.name} selected for takeover. Continuing ${order.id} from fault location.`,
+            "select"
+        );
+
+        document.getElementById("managerAction").innerText=
+            `${replacement.name} takeover approved.`;
+
+        setTimeout(()=>{
+            startTakeover(
+                order,
+                replacement
+            );
+        },500);
+
+    },1000);
+}
+
+
+/* =========================================================
+   TAKEOVER
+========================================================= */
+
+function startTakeover(order,ev){
+
+    ev.status="DELIVERING";
+
+    order.status="DELIVERING";
+    order.phase="TAKEOVER DELIVERY";
+
+    updateEV(ev);
+    renderOrders();
+    updateStats();
+
+    logMessage(
+        ev.name,
+        "FLEET MANAGER",
+        `Takeover complete. ${ev.name} continues ${order.id}.`,
+        "fault"
+    );
+
+    moveToDestination(
+        ev,
+        DESTINATIONS[
+            order.destination
+        ],
+        order
+    );
+}
+
+
+/* =========================================================
+   MANUAL LOW BATTERY
+========================================================= */
+
+function simulateLowBattery(){
+
+    const ev=
+        EVS.filter(
+            x=>x.status==="AVAILABLE"
+        ).sort(
+            (a,b)=>a.battery-b.battery
+        )[0];
+
+    if(!ev){
+
+        logMessage(
+            "SYSTEM",
+            "FLEET",
+            "No free EV available.",
+            "charge"
+        );
+
+        return;
+    }
+
+    ev.battery=18;
+
+    updateEV(ev);
+
+    logMessage(
+        ev.name,
+        "ALL EVs",
+        `⚡ Battery reduced to 18%. Requesting V2V charging decision.`,
+        "charge"
+    );
+
+    idleChargingNegotiation(ev);
+}
+
+
+/* =========================================================
+   AUTOMATIC IDLE BATTERY MONITOR
+========================================================= */
+
+function startIdleBatteryMonitoring(){
+
+    if(idleChargingTimer)
+        clearInterval(idleChargingTimer);
+
+    /*
+       Every 5 seconds fleet checks:
+       - no active order
+       - free EVs
+       - lowest battery
+    */
+
+    idleChargingTimer=
+        setInterval(()=>{
+
+            idleChargingCheck();
+
+        },5000);
+}
+
+
+/* =========================================================
+   IDLE CHARGING CHECK
+========================================================= */
+
+function idleChargingCheck(){
+
+    /*
+       DO NOT interrupt active delivery.
+    */
+
+    const activeOrders=
+        orders.some(
+            order=>
+                [
+                    "WAITING",
+                    "NEGOTIATING",
+                    "ASSIGNED",
+                    "MANAGER APPROVED",
+                    "DELIVERING",
+                    "TAKEOVER APPROVED",
+                    "FAULT - TAKEOVER"
+                ].includes(order.status)
+        );
+
+    if(activeOrders)
+        return;
+
+
+    const available=
+        EVS.filter(
+            ev=>
+                ev.status==="AVAILABLE"
+        );
+
+    if(available.length<1)
+        return;
+
+
+    /*
+       Find lowest battery EV.
+    */
+
+    const lowest=
+        [...available].sort(
+            (a,b)=>a.battery-b.battery
+        )[0];
+
+
+    /*
+       Only automatic charge if
+       battery is genuinely low.
+    */
+
+    if(lowest.battery<=35){
+
+        idleChargingNegotiation(
+            lowest
+        );
+    }
+}
+
+
+/* =========================================================
+   IDLE V2V CHARGING NEGOTIATION
+========================================================= */
+
+function idleChargingNegotiation(lowest){
+
+    /*
+       Prevent duplicate charging request.
+    */
+
+    if(
+        lowest.status==="CHARGING" ||
+        lowest.status==="RETURNING"
+    )
+        return;
+
+
+    /*
+       If an order becomes active,
+       don't interrupt it.
+    */
+
+    const activeOrders=
+        orders.some(
+            order=>
+                [
+                    "NEGOTIATING",
+                    "ASSIGNED",
+                    "MANAGER APPROVED",
+                    "DELIVERING",
+                    "TAKEOVER APPROVED",
+                    "FAULT - TAKEOVER"
+                ].includes(order.status)
+        );
+
+    if(activeOrders)
+        return;
+
+
+    lowest.status="LOW BATTERY";
+
+    updateEV(lowest);
+
+
+    logMessage(
+        lowest.name,
+        "ALL EVs",
+        `⚡ Battery ${Math.round(lowest.battery)}%. Idle fleet requesting charging decision.`,
+        "charge"
+    );
+
+
+    /*
+       OTHER FREE EVs respond.
+    */
+
+    const others=
+        EVS.filter(
+            ev=>
+                ev.id!==lowest.id &&
+                ev.status==="AVAILABLE"
+        );
+
+
+    others.forEach((ev,index)=>{
+
+        setTimeout(()=>{
+
+            communicate(
+                ev.id,
+                lowest.id,
+                `Battery ${Math.round(ev.battery)}%. Your battery is lower. You should charge first.`,
+                "charge"
+            );
+
+        },index*350);
+
+    });
+
+
+    /*
+       Consensus.
+    */
+
+    setTimeout(()=>{
+
+        /*
+           Check again.
+        */
+
+        if(
+            lowest.status!=="LOW BATTERY"
+        )
+            return;
+
+
+        lowest.status="CHARGING";
+
+        updateEV(lowest);
+
+        logMessage(
+            "ALL EVs",
+            lowest.name,
+            `V2V consensus reached. ${lowest.name} selected for charging.`,
+            "charge"
+        );
+
+        document.getElementById("mapStatus").innerText=
+            `${lowest.name} → CHARGING STATION`;
+
+        setTimeout(()=>{
+
+            automaticCharging(
+                lowest
+            );
+
+        },500);
+
+    },1200);
+}
+
+
+/* =========================================================
+   AUTOMATIC CHARGING
+========================================================= */
+
+function automaticCharging(ev){
+
+    if(
+        ev.status==="DELIVERING"
+    )
+        return;
+
+    ev.status="CHARGING";
+
+    updateEV(ev);
+
+    logMessage(
+        ev.name,
+        "CHARGING STATION",
+        `${ev.name} is travelling to charging station.`,
+        "charge"
+    );
+
+    const target={
+        x:13,
+        y:10
+    };
+
+    const timer=setInterval(()=>{
+
+        const dx=target.x-ev.x;
+        const dy=target.y-ev.y;
+
+        const distance=
+            Math.sqrt(dx*dx+dy*dy);
+
+        if(distance<=1.5){
+
+            ev.x=target.x;
+            ev.y=target.y;
+
+            positionEV(ev);
+
+            clearInterval(timer);
+
+            logMessage(
+                "CHARGING STATION",
+                ev.name,
+                `⚡ Charging started at ${Math.round(ev.battery)}%.`,
+                "charge"
+            );
+
+            startCharging(ev);
+
+            return;
+        }
+
+        const speed=2.5;
+
+        ev.x+=(dx/distance)*speed;
+        ev.y+=(dy/distance)*speed;
+
+        positionEV(ev);
+
+    },90);
+}
+
+
+/* =========================================================
+   CHARGING
+========================================================= */
+
+function startCharging(ev){
+
+    const timer=setInterval(()=>{
+
+        /*
+           Charging increases battery.
+        */
+
+        ev.battery+=4;
+
+        if(ev.battery>=100){
+
+            ev.battery=100;
+
+            clearInterval(timer);
+
+            ev.status="AVAILABLE";
+            ev.task=null;
+
+            /*
+               Return to depot after charging.
+            */
+
+            ev.x=ev.homeX;
+            ev.y=ev.homeY;
+
+            positionEV(ev);
+            updateEV(ev);
+
+            logMessage(
+                "CHARGING STATION",
+                ev.name,
+                "✓ Charging complete. Battery 100%. EV available.",
+                "charge"
+            );
+
+            document.getElementById("mapStatus").innerText=
+                `${ev.name} fully charged → AVAILABLE`;
+
+            updateStats();
+
+            return;
+        }
+
+        updateEV(ev);
+
+    },300);
+}
+
+
+/* =========================================================
+   SPEED
+========================================================= */
+
+function speedUp(){
+
+    simulationSpeed=
+        simulationSpeed===1
+        ?1.5
+        :1;
+
+    logMessage(
+        "SYSTEM",
+        "SIMULATION",
+        `Simulation speed mode: ${simulationSpeed}x.`,
+        "v2v"
+    );
+}
+
+
+/* =========================================================
+   RENDER ORDERS
+========================================================= */
+
+function renderOrders(){
+
+    const list=
+        document.getElementById(
+            "requestList"
+        );
+
+    list.innerHTML="";
+
+    orders.forEach(order=>{
+
+        const div=
+            document.createElement("div");
+
+        div.className=
+            "request "+
+            (
+                order.status!=="COMPLETED"
+                ?"active"
+                :""
+            );
+
+        div.innerHTML=`
+
+        <strong>${order.id}</strong>
+        <br>
+        Delivery ${order.destination}
+
+        <div class="req-status">
+        ${order.status}
+        ${order.ev?" • "+order.ev:""}
+        </div>
+
+        `;
+
+        list.appendChild(div);
+    });
+}
+
+
+/* =========================================================
+   CLEAR
+========================================================= */
+
+function clearLog(){
+
+    document.getElementById("log").innerHTML="";
+}
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function resetSimulation(){
+
+    location.reload();
+}
+
+
+/* =========================================================
+   INITIAL MESSAGE
+========================================================= */
+
+logMessage(
+    "SYSTEM",
+    "ALL 4 EVs",
+    "System ready. EVs connected through V2V. Idle battery monitoring enabled.",
+    "v2v"
+);
+
+renderOrders();
+updateStats();
+
+</script>
+
+</body>
+</html>
