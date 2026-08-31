@@ -135,7 +135,7 @@ This approach:
 
 EV ↔ EV ↔ EV
 
- ↕    ↕    ↕
+ ↕       ↕       ↕
  
 EV ↔ EV ↔ EV
 
