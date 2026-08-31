@@ -1,5 +1,4 @@
 # Decentralized-EV-Fleet
-A decentralized EV fleet where vehicles communicate via V2V, share real-time status, and decide the best EV for each task. The decision goes to the Fleet Manager for approval, then the suitable driver is assigned and the task starts. This saves time, reduces manual work, speeds decisions, and improves fleet efficiency.
 
 The Decentralized EV Fleet Management System is an intelligent multi-agent solution designed to make EV fleet operations faster, smarter, more efficient, and reliable.
 Instead of depending entirely on a centralized system to decide which vehicle should perform a task, each EV acts as an autonomous agent. EVs communicate with nearby vehicles through V2V communication, exchange real-time information such as battery level, location, availability, and workload, and collaboratively determine which EV is best suited for a task.
