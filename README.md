@@ -132,12 +132,19 @@ All EVs → Central Controller → Decision → EV
 The controller becomes heavily responsible for fleet-wide decisions.
 
 This approach:
+
 EV ↔ EV ↔ EV
+
  ↕    ↕    ↕
+ 
 EV ↔ EV ↔ EV
+
       ↓
+      
 Fleet Manager Approval
+    
       ↓
+
 Driver Assignment
 
 This distributes decision-making across the fleet while retaining managerial control and approval.
@@ -183,7 +190,9 @@ The prototype can be extended with:
 * Large-scale fleet deployment
 
  🎯 Final Objective
+ 
 The objective is to transform a conventional EV fleet into an intelligent, collaborative and semi-autonomous fleet where vehicles communicate, make informed decisions, obtain manager approval, and execute tasks efficiently.
 
 Communicate → Decide → Approve → Assign → Execute
+
 This approach aims to make EV fleet management faster, time-efficient, scalable, resilient, and less dependent on continuous centralized control.
