@@ -66,7 +66,7 @@ The project is technically feasible because the prototype can be implemented usi
 
 #Software Feasibility
 
-* Python can handle agent logic and decision-making.
+* Python, AI/ML algorithms can handle agent logic and decision-making.
 * Flask/FastAPI can provide backend services.
 * JavaScript, HTML and CSS can create the fleet dashboard and simulation.
 * MQTT/Web Sockets can simulate real-time vehicle communication.
