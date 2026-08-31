@@ -125,7 +125,8 @@ Driver Assignment
 
 This distributes decision-making across the fleet while retaining managerial control and approval.
 
-🖥️ Prototype Demonstration
+🖥️ Prototype Demonstration 
+
 The prototype simulates multiple EVs operating as autonomous agents.
 
 The dashboard demonstrates:
@@ -145,10 +146,12 @@ The dashboard demonstrates:
 The simulation provides a visual representation of how decentralized EV coordination can work in a real fleet environment.
 
 🔐 Safety & Human Oversight
+
 Although the system uses autonomous decision-making, the Fleet Manager remains part of the control loop.
 This makes the system more practical for real-world deployment where automated decisions may require human supervision.
 
 🔮 Future Scope
+
 The prototype can be extended with:
 
 * Real V2X communication
