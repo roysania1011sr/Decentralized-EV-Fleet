@@ -69,7 +69,7 @@ The project is technically feasible because the prototype can be implemented usi
 * Python, AI/ML algorithms can handle agent logic and decision-making.
 * Flask/FastAPI can provide backend services.
 * JavaScript, HTML and CSS can create the fleet dashboard and simulation.
-* V to V Communication MQTT/Web Sockets can simulate real-time vehicle communication.
+* V to V Communication, MQTT/Web Sockets can simulate real-time vehicle communication.
 * JSON/CSV can store vehicle and task information.
 
 The prototype does not require physical EVs. Multiple virtual EV agents can simulate real-world fleet behavior, making development and testing cost-effective.
