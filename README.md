@@ -83,28 +83,28 @@ The architecture is also scalable: additional EVs can join the fleet as new agen
 
  🚀 Benefits
 
-⏱️ Time Saving
+⏱️ Time Saving :
 Automated vehicle selection reduces the time required for manual task allocation.
 
-⚡ Faster Decision-Making
+⚡ Faster Decision-Making :
 EVs can exchange real-time information and make local decisions quickly.
 
- 🎯 Better Task Allocation
+ 🎯 Better Task Allocation :
 Tasks can be assigned according to battery level, distance, availability, and workload.
 
- 👨‍💼 Reduced Manager Workload
+ 👨‍💼 Reduced Manager Workload :
 The Fleet Manager mainly supervises and approves decisions rather than manually selecting every vehicle.
 
-🔄 Improved Flexibility
+🔄 Improved Flexibility :
 Tasks can be reassigned when vehicle conditions change.
 
-🛡️ Higher Reliability
+🛡️ Higher Reliability :
 Failure of one EV does not necessarily stop the entire fleet operation.
 
-📈 Scalability
+📈 Scalability :
 The decentralized architecture can support expansion to larger fleets.
 
-🔋 Better Energy Utilization
+🔋 Better Energy Utilization :
 Battery status can be considered while selecting vehicles, helping avoid assigning demanding tasks to vehicles with low battery.
 
 🧠 Why Decentralization?
